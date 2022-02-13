@@ -23,24 +23,35 @@
 import argparse
 import logging
 
-from .intraday import Intraday
-from .download import download
+from .naver import Naver
+from .load import load
 
 logger = logging.getLogger(__name__)
 
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('provider')
     parser.add_argument('symbol')
 
     args = parser.parse_args()
     logger.debug(f"parsed arguments: {args}")
 
-    # data = download(args.symbol)
-    # print(data)
+    return args
 
-    i = Intraday('015760', start='2022-02-07', end='2022-02-10')
-    print(list(next(i)))
+
+def main():
+    args = parse_args()
+
+    match args.provider.upper():
+        case 'NAVER':
+            provider = Naver()
+        case 'DAUM':
+            raise NotImplementedError()
+
+    df = load(provider, args.symbol)
+    print(df)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,

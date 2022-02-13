@@ -20,7 +20,7 @@
 #
 
 
-from .download import download
+from .load import load
 
 __version__ = '0.0.1'
-__all__ = ['download']
+__all__ = ['load']

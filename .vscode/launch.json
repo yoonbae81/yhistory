@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "module": "yhistory.cli",
-            "args": ["005930"],
+            "args": ["naver", "005930"],
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/src/"
         }

@@ -21,13 +21,13 @@
 
 from datetime import date, datetime, timedelta
 import pytest
-from yhistory.intraday import Intraday
+from yhistory.naver import Naver
 
 
 def test_ctor():
     symbol = 'UNKNOWN'
 
-    sut = Intraday(symbol)
+    sut = Naver()
     assert sut.symbol == symbol
     assert sut.start == date.min
     assert sut.end == date.max

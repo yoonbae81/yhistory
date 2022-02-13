@@ -26,22 +26,14 @@ from datetime import date, datetime
 from bs4 import BeautifulSoup
 from pandas.core.frame import DataFrame
 
-from .source import Source
+from .provider import Provider
 
 logger = logging.getLogger(__name__)
 
 
-class OutOfPeriod(Exception):
-    pass
-
-
-class Intraday(Source):
-    def __init__(self,
-                 symbol: str,
-                 start: t.Optional[date] = date.min,
-                 end: t.Optional[date] = date.max):
-        super().__init__(symbol, start, end)
-        self.page = 0
+class Naver(Provider):
+    def __init__(self):
+        super().__init__()
 
     @property
     def base_url(self) -> str:

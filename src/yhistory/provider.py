@@ -32,53 +32,9 @@ from urllib3.util.retry import Retry
 logger = logging.getLogger(__name__)
 
 
-class Source(ABC):
-    def __init__(self,
-                 symbol: str,
-                 start: t.Optional[date] = date.min,
-                 end: t.Optional[date] = date.max):
-        self.symbol = symbol
-        self.start = Source.get_datetime(start)
-        self.end = Source.get_datetime(end)
-
+class Provider(ABC):
+    def __init__(self):
         self.session = self._session()
-
-    def get_datetime(data: t.Union[str, date, time]) -> t.Union[date, time]:
-        if isinstance(data, str):
-            return datetime.fromisoformat(data)
-
-        return data
-
-    def _session(self):
-        r = Retry(total=5,
-                  backoff_factor=0.2,
-                  status_forcelist=[413, 429, 500, 502, 503, 504])
-        a = HTTPAdapter(max_retries=r)
-
-        session = requests.session()
-        session.mount('http://', a)
-        session.mount('https://', a)
-
-        return session
-
-    def __next__(self) -> dict:
-        res = self.session.get(self.base_url,
-                               headers=self.header,
-                               params=self.next_params())
-
-        if res.status_code != 200 or not self.is_valid(res.text):
-            raise StopIteration()
-
-        for record in self.parse(res.text):
-
-            if self.start > record['Date']:
-                self.last_page = True
-                break
-
-            if self.end < d:
-                continue
-
-            yield record
 
     def __iter__(self) -> t.Iterable:
         return self
@@ -102,3 +58,50 @@ class Source(ABC):
     @abstractmethod
     def parse(self, text: str) -> t.Generator:
         pass
+
+    def _session(self):
+        r = Retry(total=5,
+                  backoff_factor=0.2,
+                  status_forcelist=[413, 429, 500, 502, 503, 504])
+        a = HTTPAdapter(max_retries=r)
+
+        session = requests.session()
+        session.mount('http://', a)
+        session.mount('https://', a)
+
+        return session
+
+    def download(self,
+                 symbol: str,
+                 start: t.Optional[date] = date.min,
+                 end: t.Optional[date] = date.max) -> t.Iterable:
+
+        for i in range(3):
+            yield {'Value'}
+
+    # todo merge __next__ into download above
+    def __next__(self) -> dict:
+        res = self.session.get(self.base_url,
+                               headers=self.header,
+                               params=self.next_params())
+
+        if res.status_code != 200 or not self.is_valid(res.text):
+            raise StopIteration()
+
+        for record in self.parse(res.text):
+
+            if self.start > record['Date']:
+                self.last_page = True
+                break
+
+            if self.end < record['Date']:
+                continue
+
+            yield record
+
+
+    def get_datetime(data: t.Union[str, date, time]) -> t.Union[date, time]:
+        if isinstance(data, str):
+            return datetime.fromisoformat(data)
+
+        return data

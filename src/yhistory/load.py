@@ -19,36 +19,34 @@
 # limitations under the License.
 #
 
-
 import logging
-from datetime import date, datetime
+import typing as t
+from datetime import date
 
 import pandas as pd
 from pandas.core.frame import DataFrame
 
-from .intraday import Intraday
+from .provider import Provider
 
 logger = logging.getLogger(__name__)
 
 
-def download(symbol, start=date.min, end=date.max, interval='1d') -> DataFrame:
-    logger.info('starting...')
+def load(provider: Provider,
+         symbol: str,
+         start: t.Optional[date] = date.min,
+         end: t.Optional[date] = date.max) -> DataFrame:
 
-            source = Intraday(symbol, start, end)
-            index = 
+    # todo load df from shelve and get max/min dates
+    # todo examine df and given start/end dates 
+    # todo download only missing data in shelves
 
     records = []
-    for record in source:
+    for record in provider.download(symbol, start, end):
         records.append(record)
 
-    df = pd.DataFrame(records)
-    df.set_index('Date')
+    # df = pd.DataFrame(records)
+    # df.set_index('Date')
 
-    return df
+    # return df
 
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-5.5s %(name)s %(message)s')
-
-    print(download('005930'))
+    return records

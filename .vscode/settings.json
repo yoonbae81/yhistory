@@ -28,5 +28,8 @@
         "**/venv": true
     },
     "python.pythonPath": "venv\\Scripts\\python.exe",
-    "python.formatting.provider": "yapf",
+    "python.formatting.provider": "autopep8",
+    "editor.lineNumbers": "off",
+    "editor.folding": false,
+    "editor.glyphMargin": false,
 }
