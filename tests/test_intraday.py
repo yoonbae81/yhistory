@@ -19,31 +19,26 @@
 # limitations under the License.
 #
 
-import argparse
-import logging
-
+import pytest
 from nfinance.intraday import Intraday
 
-from .download import download
 
-logger = logging.getLogger(__name__)
+def test_ctor():
+    symbol = 'UNKNOWN'
+    sut = Intraday(symbol)
+    assert sut.symbol == symbol
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('symbol')
+def test_invalid_symbol():
+    symbol = 'WRONG!'
+    sut = Intraday(symbol)
+    with pytest.raises(StopIteration):
+        next(sut)
 
-    args = parser.parse_args()
-    logger.debug(f"parsed arguments: {args}")
 
-    # data = download(args.symbol)
-    # print(data)
+def test_first_page():
+    symbol = '005930'
+    sut = Intraday(symbol)
 
-    i = Intraday('015760', start='2022-02-07', end='2022-02-10')
-    print(list(next(i)))
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-5.5s %(name)s %(message)s')
-
-    main()
+    page = next(sut)
+    assert 10 == len(list(page))

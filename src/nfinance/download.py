@@ -20,16 +20,17 @@
 #
 
 import logging
+from datetime import date, datetime
 
 import pandas as pd
 from pandas.core.frame import DataFrame
 
-from . import Intraday
+from .intraday import Intraday
 
 logger = logging.getLogger(__name__)
 
 
-def download(symbol, start=None, end=None, interval='1d') -> DataFrame:
+def download(symbol, start=date.min, end=date.max, interval='1d') -> DataFrame:
     logger.info('starting...')
 
     match interval:
@@ -48,5 +49,9 @@ def download(symbol, start=None, end=None, interval='1d') -> DataFrame:
 
     return df
 
+
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(levelname)-5.5s %(name)s %(message)s')
+
     print(download('005930'))
