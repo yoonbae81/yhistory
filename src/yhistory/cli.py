@@ -23,8 +23,7 @@
 import argparse
 import logging
 
-from nfinance.intraday import Intraday
-
+from .intraday import Intraday
 from .download import download
 
 logger = logging.getLogger(__name__)

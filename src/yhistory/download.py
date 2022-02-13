@@ -34,19 +34,15 @@ logger = logging.getLogger(__name__)
 def download(symbol, start=date.min, end=date.max, interval='1d') -> DataFrame:
     logger.info('starting...')
 
-    match interval:
-        case '1d':
             source = Intraday(symbol, start, end)
-            index = 'Date'
-        case '1m':
-            raise NotImplementedError()
+            index = 
 
     records = []
     for record in source:
         records.append(record)
 
     df = pd.DataFrame(records)
-    df.set_index(index)
+    df.set_index('Date')
 
     return df
 

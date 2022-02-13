@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# nfinance, market data downloader
-# https://github.com/yoonbae81/nfinance
+# yHistory, Korean stock market data downloader
+# https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
 #
@@ -21,7 +21,7 @@
 
 from datetime import date, datetime, timedelta
 import pytest
-from nfinance.intraday import Intraday
+from yhistory.intraday import Intraday
 
 
 def test_ctor():
