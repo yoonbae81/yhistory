@@ -1,0 +1,31 @@
+{
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "window.zoomLevel": 0,
+    "editor.fontSize": 18,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.terminal.executeInFileDir": true,
+    "terminal.integrated.fontFamily": "MesloLGS NF",
+    "terminal.integrated.fontSize": 16,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.DS_Store": true,
+        "**/.git": true,
+        "**/.hg": true,
+        "**/.pytest_cache": true,
+        "**/.svn": true,
+        "**/*.egg-info": true,
+        "**/*.pyc": {
+            "when": "$(basename).py"
+        },
+        "**/CVS": true,
+        "**/dist": true,
+        "**/venv": true
+    },
+    "python.pythonPath": "venv\\Scripts\\python.exe",
+}

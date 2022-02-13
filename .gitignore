@@ -101,14 +101,8 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env
-.venv
-env/
+# Virtual Environments
 venv/
-ENV/
-env.bak/
-venv.bak/
 
 # Spyder project settings
 .spyderproject
@@ -127,3 +121,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# OS generated files
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
