@@ -1,2 +1,2 @@
-# nfinance
-Download market data from NAVER
+# yHistory
+Download Korean market data from NAVER and DAUM.

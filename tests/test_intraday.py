@@ -19,18 +19,33 @@
 # limitations under the License.
 #
 
+from datetime import date, datetime, timedelta
 import pytest
 from nfinance.intraday import Intraday
 
 
 def test_ctor():
     symbol = 'UNKNOWN'
+
     sut = Intraday(symbol)
     assert sut.symbol == symbol
+    assert sut.start == date.min
+    assert sut.end == date.max
+
+
+def test_ctor_with_date():
+    symbol = 'UNKNOWN'
+    start = datetime.today() - timedelta(days=10)
+    end = datetime.today()
+
+    sut = Intraday(symbol, start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
+    assert start.date() == sut.start.date()
+    assert end.date() == sut.end.date()
 
 
 def test_invalid_symbol():
     symbol = 'WRONG!'
+
     sut = Intraday(symbol)
     with pytest.raises(StopIteration):
         next(sut)
@@ -38,7 +53,7 @@ def test_invalid_symbol():
 
 def test_first_page():
     symbol = '005930'
-    sut = Intraday(symbol)
 
+    sut = Intraday(symbol)
     page = next(sut)
     assert 10 == len(list(page))

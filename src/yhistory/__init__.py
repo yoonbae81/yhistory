@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# nfinance, market data downloader
-# https://github.com/yoonbae81/nfinance
+# yHistory, Korean stock market data downloader
+# https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
 #
@@ -19,31 +19,8 @@
 # limitations under the License.
 #
 
-import argparse
-import logging
-
-from nfinance.intraday import Intraday
 
 from .download import download
 
-logger = logging.getLogger(__name__)
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('symbol')
-
-    args = parser.parse_args()
-    logger.debug(f"parsed arguments: {args}")
-
-    # data = download(args.symbol)
-    # print(data)
-
-    i = Intraday('015760', start='2022-02-07', end='2022-02-10')
-    print(list(next(i)))
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-5.5s %(name)s %(message)s')
-
-    main()
+__version__ = '0.0.1'
+__all__ = ['download']

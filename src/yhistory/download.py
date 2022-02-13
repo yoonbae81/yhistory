@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# nfinance, market data downloader
-# https://github.com/yoonbae81/nfinance
+# yHistory, Korean stock market data downloader
+# https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
 #
@@ -18,6 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 
 import logging
 from datetime import date, datetime
@@ -35,17 +36,17 @@ def download(symbol, start=date.min, end=date.max, interval='1d') -> DataFrame:
 
     match interval:
         case '1d':
-            pages = Intraday(symbol, start, end)
+            source = Intraday(symbol, start, end)
+            index = 'Date'
         case '1m':
             raise NotImplementedError()
 
     records = []
-    for page in pages:
-        for record in page:
-            records.append(record)
+    for record in source:
+        records.append(record)
 
     df = pd.DataFrame(records)
-    df.set_index('Date')
+    df.set_index(index)
 
     return df
 
