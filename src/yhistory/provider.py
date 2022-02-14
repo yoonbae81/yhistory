@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# yHistory, Korean stock market data downloader
+# yHistory, provides cached market data from providers
 # https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
@@ -19,7 +19,6 @@
 # limitations under the License.
 #
 
-
 import logging
 import typing as t
 from abc import ABC, abstractmethod, abstractproperty
@@ -28,27 +27,26 @@ from datetime import date, time, datetime
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from pandas.core.frame import DataFrame
 
 logger = logging.getLogger(__name__)
 
 
 class Provider(ABC):
     def __init__(self):
-        self.session = self._session()
-
-    def __iter__(self) -> t.Iterable:
-        return self
+        self.session = __class__._session()
 
     @abstractproperty
     def base_url(self) -> str:
         pass
 
+
     @abstractproperty
-    def header(self) -> dict:
+    def base_params(self) -> dict:
         pass
 
-    @abstractmethod
-    def next_params(self) -> dict:
+    @abstractproperty
+    def header(self) -> dict:
         pass
 
     @abstractmethod
@@ -59,25 +57,18 @@ class Provider(ABC):
     def parse(self, text: str) -> t.Generator:
         pass
 
-    def _session(self):
-        r = Retry(total=5,
-                  backoff_factor=0.2,
-                  status_forcelist=[413, 429, 500, 502, 503, 504])
-        a = HTTPAdapter(max_retries=r)
 
-        session = requests.session()
-        session.mount('http://', a)
-        session.mount('https://', a)
+    def download(self, symbol: str, start: date, end: date) -> DataFrame:
+            
 
-        return session
 
-    def download(self,
-                 symbol: str,
-                 start: t.Optional[date] = date.min,
-                 end: t.Optional[date] = date.max) -> t.Iterable:
 
         for i in range(3):
             yield {'Value'}
+
+    # df = pd.DataFrame(records)
+    # df.set_index('Date')
+    # return df
 
     # todo merge __next__ into download above
     def __next__(self) -> dict:
@@ -97,11 +88,17 @@ class Provider(ABC):
             if self.end < record['Date']:
                 continue
 
-            yield record
+            yield recordwnload above
 
+    @staticmethod
+    def _session():
+        r = Retry(total=5,
+                  backoff_factor=0.2,
+                  status_forcelist=[413, 429, 500, 502, 503, 504])
+        a = HTTPAdapter(max_retries=r)
 
-    def get_datetime(data: t.Union[str, date, time]) -> t.Union[date, time]:
-        if isinstance(data, str):
-            return datetime.fromisoformat(data)
+        s = requests.session()
+        s.mount('http://', a)
+        s.mount('https://', a)
 
-        return data
+        return s

@@ -1,2 +1,2 @@
 # yHistory
-Download Korean market data from NAVER and DAUM.
+Provide cached market data from NAVER, Daum, and Yahoo.

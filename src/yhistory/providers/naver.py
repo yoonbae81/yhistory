@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# yHistory, Korean stock market data downloader
+# yHistory, provides cached market data from providers
 # https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
@@ -26,7 +26,7 @@ from datetime import date, datetime
 from bs4 import BeautifulSoup
 from pandas.core.frame import DataFrame
 
-from .provider import Provider
+from ..provider import Provider
 
 logger = logging.getLogger(__name__)
 
@@ -36,19 +36,19 @@ class Naver(Provider):
         super().__init__()
 
     @property
-    def base_url(self) -> str:
-        return 'https://finance.naver.com/item/sise_day.nhn'
-
-    @property
     def header(self) -> dict:
         return {
             'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.43'
         }
 
-    def next_params(self) -> dict:
-        self.page += 1
-        return {'code': self.symbol, 'page': self.page}
+    @property
+    def base_url(self) -> str:
+        return 'https://finance.naver.com/item/sise_day.nhn'
+
+    @property
+    def base_params(self) -> dict:
+        return {'code': self.symbol, 'page': 1}
 
     def is_valid(self, text: str) -> bool:
         if '&amp;page=1"  >1</a>\n				</td>\n\n' in text:
@@ -75,6 +75,5 @@ class Naver(Provider):
                 'High': v[4],
                 'Low': v[5],
                 'Close': v[1],
-                'Adj Close': v[1],
                 'Volume': v[6],
             }

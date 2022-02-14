@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# yHistory, Korean stock market data downloader
+# yHistory, provides cached market data from providers
 # https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
@@ -19,11 +19,10 @@
 # limitations under the License.
 #
 
-
 import argparse
 import logging
 
-from .naver import Naver
+from .providers.naver import Naver
 from .load import load
 
 logger = logging.getLogger(__name__)

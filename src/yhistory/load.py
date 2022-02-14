@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# yHistory, Korean stock market data downloader
+# yHistory, provides cached market data from providers
 # https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
@@ -21,7 +21,8 @@
 
 import logging
 import typing as t
-from datetime import date
+from datetime import date, datetime
+e
 
 import pandas as pd
 from pandas.core.frame import DataFrame
@@ -34,19 +35,23 @@ logger = logging.getLogger(__name__)
 def load(provider: Provider,
          symbol: str,
          start: t.Optional[date] = date.min,
-         end: t.Optional[date] = date.max) -> DataFrame:
+         end: t.Optional[date] = date.today()) -> DataFrame:
+
+    start, end = to_date(start), to_date(end)
 
     # todo load df from shelve and get max/min dates
-    # todo examine df and given start/end dates 
+    # todo examine df and given start/end dates
     # todo download only missing data in shelves
 
-    records = []
-    for record in provider.download(symbol, start, end):
-        records.append(record)
+    records = provider.download(symbol, start, end)
 
-    # df = pd.DataFrame(records)
-    # df.set_index('Date')
-
-    # return df
+    # todo merge downloaded dataframe into existing one in shelve
 
     return records
+
+
+def to_date(value: t.Union[date, str]) -> date:
+    if isinstance(value, date):
+        return value
+
+    return datetime.fromisoformat(value)

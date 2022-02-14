@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# yHistory, Korean stock market data downloader
+# yHistory, provides cached market data from providers
 # https://github.com/yoonbae81/yhistory
 #
 # Copyright 2022 Yoonbae Cho
@@ -21,7 +21,7 @@
 
 from datetime import date, datetime, timedelta
 import pytest
-from yhistory.naver import Naver
+from yhistory.providers import Naver
 
 
 def test_ctor():
