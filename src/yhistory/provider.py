@@ -22,83 +22,59 @@
 import logging
 import typing as t
 from abc import ABC, abstractmethod, abstractproperty
-from datetime import date, time, datetime
-
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from pandas.core.frame import DataFrame
+from dataclasses import dataclass
+from datetime import date
 
 logger = logging.getLogger(__name__)
 
 
+class NotFoundError(RuntimeError):
+    pass
+
+
+@dataclass
+class Record():
+    date: date
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: int
+
+
 class Provider(ABC):
-    def __init__(self):
-        self.session = __class__._session()
+
+    @abstractproperty
+    def headers(self) -> dict:
+        pass
 
     @abstractproperty
     def base_url(self) -> str:
         pass
 
-
-    @abstractproperty
-    def base_params(self) -> dict:
-        pass
-
-    @abstractproperty
-    def header(self) -> dict:
+    @abstractmethod
+    def request(self, symbol: str) -> t.Generator[str, None, None]:
         pass
 
     @abstractmethod
-    def is_valid(self, text: str) -> bool:
+    def parse(self, text: str) -> t.Generator[Record, None, None]:
         pass
 
-    @abstractmethod
-    def parse(self, text: str) -> t.Generator:
-        pass
+    def download(self, symbol: str, start: date, end: date) -> list[Record]:
+        records = []
+        try:
+            for text in self.request(symbol):
+                for record in self.parse(text):
+                    records.append(record)
 
+                # if self.start > record['Date']:
+                #     self.last_page = True
+                #     break
 
-    def download(self, symbol: str, start: date, end: date) -> DataFrame:
-            
+                # if self.end < record['Date']:
+                #     continue
 
+        except NotFoundError:
+            logger.error('No data found')
 
-
-        for i in range(3):
-            yield {'Value'}
-
-    # df = pd.DataFrame(records)
-    # df.set_index('Date')
-    # return df
-
-    # todo merge __next__ into download above
-    def __next__(self) -> dict:
-        res = self.session.get(self.base_url,
-                               headers=self.header,
-                               params=self.next_params())
-
-        if res.status_code != 200 or not self.is_valid(res.text):
-            raise StopIteration()
-
-        for record in self.parse(res.text):
-
-            if self.start > record['Date']:
-                self.last_page = True
-                break
-
-            if self.end < record['Date']:
-                continue
-
-            yield recordwnload above
-
-    @staticmethod
-    def _session():
-        r = Retry(total=5,
-                  backoff_factor=0.2,
-                  status_forcelist=[413, 429, 500, 502, 503, 504])
-        a = HTTPAdapter(max_retries=r)
-
-        s = requests.session()
-        s.mount('http://', a)
-        s.mount('https://', a)
-
-        return s
+        return records

@@ -21,22 +21,22 @@
 
 import logging
 import typing as t
-from datetime import date, datetime
+from datetime import datetime
 
+import requests
 from bs4 import BeautifulSoup
-from pandas.core.frame import DataFrame
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-from ..provider import Provider
+from ..provider import NotFoundError, Provider, Record
 
 logger = logging.getLogger(__name__)
 
 
 class Naver(Provider):
-    def __init__(self):
-        super().__init__()
 
     @property
-    def header(self) -> dict:
+    def headers(self) -> dict:
         return {
             'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.43'
@@ -46,34 +46,48 @@ class Naver(Provider):
     def base_url(self) -> str:
         return 'https://finance.naver.com/item/sise_day.nhn'
 
-    @property
-    def base_params(self) -> dict:
-        return {'code': self.symbol, 'page': 1}
+    @staticmethod
+    def session() -> requests.Session:
+        r = Retry(total=5,
+                  backoff_factor=0.2,
+                  status_forcelist=[413, 429, 500, 502, 503, 504])
+        a = HTTPAdapter(max_retries=r)
 
-    def is_valid(self, text: str) -> bool:
-        if '&amp;page=1"  >1</a>\n				</td>\n\n' in text:
-            logger.warn('Invalid symbol')
-            return False
+        s = requests.session()
+        s.mount('http://', a)
+        s.mount('https://', a)
 
-        return True
+        return s
 
-    def parse(self, text: str) -> t.Generator:
-        def partition(line: str, n: int):
-            for i in range(0, len(line), n):
-                yield line[i:i + n]
+    def request(self, symbol: str) -> t.Generator[str, None, None]:
+        s = self.__class__.session()
+        p = {'code': symbol, 'page': 1}
 
+        res = s.get(self.base_url, params=p, headers=self.headers)
+
+        if '&amp;page=1"  >1</a>\n				</td>\n\n' in res.text:
+            logger.warn("Couldn't find any data due to invalid symbol")
+            raise NotFoundError
+
+        yield res.text
+
+    @staticmethod
+    def partition(line: str, n: int) -> t.Generator[list[str], None, None]:
+        for i in range(0, len(line), n):
+            yield line[i:i + n]
+
+    def parse(self, text: str) -> t.Generator[Record, None, None]:
         # ['date', 'close', 'delta', 'open', 'high', 'low', 'volume']
         bs = BeautifulSoup(text, 'html.parser')
         values = [span.text for span in bs.findAll('span', class_='tah')]
         values = list(map(lambda v: v.strip().replace(',', ''), values))
         values = [int(v) if v.isnumeric() else v for v in values]
 
-        for v in partition(values, 7):
-            yield {
-                'Date': datetime.strptime(v[0], '%Y.%m.%d'),
-                'Open': v[3],
-                'High': v[4],
-                'Low': v[5],
-                'Close': v[1],
-                'Volume': v[6],
-            }
+        for v in self.__class__.partition(values, 7):
+            d = datetime.strptime(v[0], '%Y.%m.%d')
+            yield Record(date=d,
+                         open=v[3],
+                         high=v[4],
+                         low=v[5],
+                         close=v[1],
+                         volume=[6])

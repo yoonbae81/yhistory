@@ -22,7 +22,6 @@
 import logging
 import typing as t
 from datetime import date, datetime
-e
 
 import pandas as pd
 from pandas.core.frame import DataFrame
@@ -32,10 +31,12 @@ from .provider import Provider
 logger = logging.getLogger(__name__)
 
 
-def load(provider: Provider,
-         symbol: str,
-         start: t.Optional[date] = date.min,
-         end: t.Optional[date] = date.today()) -> DataFrame:
+def load(
+    provider: Provider,
+    symbol: str,
+    start: t.Optional[date] = date.min,
+    end: t.Optional[date] = date.today()
+) -> DataFrame:
 
     start, end = to_date(start), to_date(end)
 

@@ -21,26 +21,32 @@
 
 import argparse
 import logging
+import sys
 
-from .providers.naver import Naver
 from .load import load
+from .providers import Naver
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(levelname)-5.5s %(name)s %(message)s')
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('provider')
-    parser.add_argument('symbol')
+def parse(argv: list[str]):
+    parser = argparse.ArgumentParser(description="Load intraday market data from providers")
+    parser.add_argument('provider',
+                        choices=['naver', 'daum', 'yahoo'],
+                        help='market data provider')
+    parser.add_argument('symbol',
+                        help='stock symbol representing securities on an exchange')
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     logger.debug(f"parsed arguments: {args}")
 
     return args
 
 
 def main():
-    args = parse_args()
+    args = parse(sys.argv[1:])
 
     match args.provider.upper():
         case 'NAVER':
@@ -53,7 +59,4 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-5.5s %(name)s %(message)s')
-
     main()
