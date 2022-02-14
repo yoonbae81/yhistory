@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 
 def parse(argv: list[str]):
-    parser = argparse.ArgumentParser(description="Load intraday market data from providers")
+    parser = argparse.ArgumentParser(description='Load intraday market data from providers')
     parser.add_argument('provider',
                         choices=['naver', 'daum', 'yahoo'],
                         help='market data provider')
@@ -56,7 +56,6 @@ def main():
 
     df = load(provider, args.symbol)
     print(*df, sep='\n')
-    
 
 
 if __name__ == '__main__':
