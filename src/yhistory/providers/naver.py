@@ -28,7 +28,7 @@ from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from ..provider import NotFoundError, Provider, Record
+from .base import NotFoundError, Provider, Record
 
 logger = logging.getLogger(__name__)
 
@@ -59,17 +59,16 @@ class Naver(Provider):
 
         return s
 
-    def request(self, symbol: str) -> t.Generator[str, None, None]:
+    def fetch(self, symbol: str) -> t.Generator[str, None, None]:
         s = self.__class__.session()
         p = {'code': symbol, 'page': 1}
+        r = s.get(self.base_url, params=p, headers=self.headers)
 
-        res = s.get(self.base_url, params=p, headers=self.headers)
-
-        if '&amp;page=1"  >1</a>\n				</td>\n\n' in res.text:
+        if '&amp;page=1"  >1</a>\n				</td>\n\n' in r.text:
             logger.warn("Couldn't find any data due to invalid symbol")
             raise NotFoundError
 
-        yield res.text
+        yield r.text
 
     @staticmethod
     def partition(line: str, n: int) -> t.Generator[list[str], None, None]:

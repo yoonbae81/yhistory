@@ -53,7 +53,7 @@ class Provider(ABC):
         pass
 
     @abstractmethod
-    def request(self, symbol: str) -> t.Generator[str, None, None]:
+    def fetch(self, symbol: str) -> t.Generator[str, None, None]:
         pass
 
     @abstractmethod
@@ -63,7 +63,7 @@ class Provider(ABC):
     def download(self, symbol: str, start: date, end: date) -> list[Record]:
         records = []
         try:
-            for text in self.request(symbol):
+            for text in self.fetch(symbol):
                 for record in self.parse(text):
                     records.append(record)
 

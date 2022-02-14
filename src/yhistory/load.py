@@ -26,7 +26,7 @@ from datetime import date, datetime
 import pandas as pd
 from pandas.core.frame import DataFrame
 
-from .provider import Provider
+from .providers.base import Provider
 
 logger = logging.getLogger(__name__)
 

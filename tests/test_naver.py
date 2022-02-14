@@ -20,7 +20,7 @@
 #
 
 import pytest
-from yhistory.provider import NotFoundError
+from yhistory.providers.base import NotFoundError
 from yhistory.providers import Naver
 
 
@@ -29,12 +29,12 @@ def test_invalid_symbol():
 
     sut = Naver()
     with pytest.raises(NotFoundError):
-        next(sut.request(symbol))
+        next(sut.fetch(symbol))
 
 
 def test_first_page():
     symbol = '005930'
 
     sut = Naver()
-    text = next(sut.request(symbol))
+    text = next(sut.fetch(symbol))
     assert 10 == len(list(sut.parse(text)))
