@@ -55,7 +55,8 @@ def main():
             raise NotImplementedError()
 
     df = load(provider, args.symbol)
-    print(df)
+    print(*df, sep='\n')
+    
 
 
 if __name__ == '__main__':

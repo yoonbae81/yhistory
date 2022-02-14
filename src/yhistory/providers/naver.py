@@ -70,23 +70,29 @@ class Naver(Provider):
 
         yield r.text
 
+        while '맨뒤' in r.text:
+            p['page'] += 1
+            r = s.get(self.base_url, params=p, headers=self.headers)
+            yield r.text
+
+
     @staticmethod
     def partition(line: str, n: int) -> t.Generator[list[str], None, None]:
         for i in range(0, len(line), n):
             yield line[i:i + n]
 
     def parse(self, text: str) -> t.Generator[Record, None, None]:
-        # ['date', 'close', 'delta', 'open', 'high', 'low', 'volume']
         bs = BeautifulSoup(text, 'html.parser')
+
         values = [span.text for span in bs.findAll('span', class_='tah')]
         values = list(map(lambda v: v.strip().replace(',', ''), values))
         values = [int(v) if v.isnumeric() else v for v in values]
 
+        # ['date', 'close', 'delta', 'open', 'high', 'low', 'volume']
         for v in self.__class__.partition(values, 7):
-            d = datetime.strptime(v[0], '%Y.%m.%d')
-            yield Record(date=d,
+            yield Record(date=datetime.strptime(v[0], '%Y.%m.%d'),
                          open=v[3],
                          high=v[4],
                          low=v[5],
                          close=v[1],
-                         volume=[6])
+                         volume=v[6])

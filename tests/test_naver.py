@@ -37,4 +37,7 @@ def test_first_page():
 
     sut = Naver()
     text = next(sut.fetch(symbol))
-    assert 10 == len(list(sut.parse(text)))
+    assert '네이버 금융' in text
+
+    records = list(sut.parse(text))
+    assert 10 == len(records)
