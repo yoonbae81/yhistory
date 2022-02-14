@@ -31,5 +31,4 @@
     "python.formatting.provider": "yapf",
     "editor.lineNumbers": "off",
     "editor.folding": false,
-    "editor.glyphMargin": false,
 }
