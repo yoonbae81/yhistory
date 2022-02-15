@@ -63,16 +63,10 @@ class Provider(ABC):
     def download(self, symbol: str, start: date, end: date) -> list[Record]:
         records = []
         try:
-            for text in self.fetch(symbol):
+            for text in self.fetch(symbol, start, end):
                 for record in self.parse(text):
-                    records.append(record)
-
-                # if self.start > record['Date']:
-                #     self.last_page = True
-                #     break
-
-                # if self.end < record['Date']:
-                #     continue
+                    if self.start <= record['date'] <= self.end:
+                        records.append(record)
 
         except NotFoundError:
             logger.error('No data found')

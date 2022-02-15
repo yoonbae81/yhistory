@@ -53,6 +53,8 @@ def main():
             provider = Naver()
         case 'DAUM':
             raise NotImplementedError()
+        case 'YAHOO':
+            raise NotImplementedError()
 
     df = load(provider, args.symbol)
     print(*df, sep='\n')

@@ -34,8 +34,8 @@ logger = logging.getLogger(__name__)
 def load(
     provider: Provider,
     symbol: str,
-    start: t.Optional[date] = date.min,
-    end: t.Optional[date] = date.today()
+    start: t.Union[date, str, None] = date.min,
+    end: t.Union[date, str, None] = date.today()
 ) -> DataFrame:
 
     start, end = to_date(start), to_date(end)

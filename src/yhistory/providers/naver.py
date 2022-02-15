@@ -75,7 +75,6 @@ class Naver(Provider):
             r = s.get(self.base_url, params=p, headers=self.headers)
             yield r.text
 
-
     @staticmethod
     def partition(line: str, n: int) -> t.Generator[list[str], None, None]:
         for i in range(0, len(line), n):
